@@ -1,6 +1,6 @@
 /* eslint-disable import/no-named-as-default */
 import sha1 from 'sha1';
-import Queue from 'bull/lib/queue';
+import Queue from 'bull';
 import dbClient from '../utils/db';
 
 const userQueue = new Queue('email sending');

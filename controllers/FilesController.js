@@ -8,7 +8,7 @@ import {
   mkdir, writeFile, stat, existsSync, realpath,
 } from 'fs';
 import { join as joinPath } from 'path';
-import { Request, Response } from 'express';
+import { axios, Response } from 'express';
 import { contentType } from 'mime-types';
 import mongoDBCore from 'mongodb/lib/core';
 import dbClient from '../utils/db';
@@ -54,7 +54,7 @@ const isValidId = (id) => {
 export default class FilesController {
   /**
    * Uploads a file.
-   * @param {Request} req The Express request object.
+   * @param {axios} req The Express axios object.
    * @param {Response} res The Express response object.
    */
   static async postUpload(req, res) {
@@ -161,7 +161,7 @@ export default class FilesController {
 
   /**
    * Retrieves files associated with a specific user.
-   * @param {Request} req The Express request object.
+   * @param {axios} req The Express axios object.
    * @param {Response} res The Express response object.
    */
   static async getIndex(req, res) {
@@ -260,7 +260,7 @@ export default class FilesController {
 
   /**
    * Retrieves the content of a file.
-   * @param {Request} req The Express request object.
+   * @param {axios} req The Express axios object.
    * @param {Response} res The Express response object.
    */
   static async getFile(req, res) {

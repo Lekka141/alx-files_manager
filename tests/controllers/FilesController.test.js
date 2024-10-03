@@ -78,12 +78,12 @@ describe('+ FilesController', () => {
       }).catch((connectErr) => done(connectErr));
   };
   const signUp = (user, callback) => {
-    request.post('/users')
+    axios.post('/users')
       .send({ email: user.email, password: user.password })
       .expect(201)
-      .end((requestErr, res) => {
-        if (requestErr) {
-          return callback ? callback(requestErr) : requestErr;
+      .end((axiosErr, res) => {
+        if (axiosErr) {
+          return callback ? callback(axiosErr) : axiosErr;
         }
         expect(res.body.email).to.eql(user.email);
         expect(res.body.id.length).to.be.greaterThan(0);
@@ -93,12 +93,12 @@ describe('+ FilesController', () => {
       });
   };
   const signIn = (user, callback) => {
-    request.get('/connect')
+    axios.get('/connect')
       .auth(user.email, user.password, { type: 'basic' })
       .expect(200)
-      .end((requestErr, res) => {
-        if (requestErr) {
-          return callback ? callback(requestErr) : requestErr;
+      .end((axiosErr, res) => {
+        if (axiosErr) {
+          return callback ? callback(axiosErr) : axiosErr;
         }
         expect(res.body.token).to.exist;
         expect(res.body.token.length).to.be.greaterThan(0);
@@ -125,7 +125,7 @@ describe('+ FilesController', () => {
 
   describe('+ POST: /files', () => {
     it('+ Fails with no "X-Token" header field', function (done) {
-      request.post('/files')
+      axios.post('/files')
         .expect(401)
         .end((err, res) => {
           if (err) {
@@ -138,12 +138,12 @@ describe('+ FilesController', () => {
 
     it('+ Fails for a non-existent user', function (done) {
       this.timeout(5000);
-      request.post('/files')
+      axios.post('/files')
         .set('X-Token', 'raboof')
         .expect(401)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Unauthorized' });
           done();
@@ -152,13 +152,13 @@ describe('+ FilesController', () => {
 
     it('+ Fails if name is missing', function (done) {
       this.timeout(5000);
-      request.post('/files')
+      axios.post('/files')
         .set('X-Token', token)
         .send({})
         .expect(400)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Missing name' });
           done();
@@ -167,13 +167,13 @@ describe('+ FilesController', () => {
 
     it('+ Fails if type is missing', function (done) {
       this.timeout(5000);
-      request.post('/files')
+      axios.post('/files')
         .set('X-Token', token)
         .send({ name: 'manga_titles.txt' })
         .expect(400)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Missing type' });
           done();
@@ -182,13 +182,13 @@ describe('+ FilesController', () => {
 
     it('+ Fails if type is available but unrecognized', function (done) {
       this.timeout(5000);
-      request.post('/files')
+      axios.post('/files')
         .set('X-Token', token)
         .send({ name: 'manga_titles.txt', type: 'nakamura' })
         .expect(400)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Missing type' });
           done();
@@ -197,13 +197,13 @@ describe('+ FilesController', () => {
 
     it('+ Fails if data is missing and type is not a folder', function (done) {
       this.timeout(5000);
-      request.post('/files')
+      axios.post('/files')
         .set('X-Token', token)
         .send({ name: mockFiles[0].name, type: mockFiles[0].type })
         .expect(400)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Missing data' });
           done();
@@ -212,7 +212,7 @@ describe('+ FilesController', () => {
 
     it('+ Fails if unknown parentId is set', function (done) {
       this.timeout(5000);
-      request.post('/files')
+      axios.post('/files')
         .set('X-Token', token)
         .send({
           name: mockFiles[0].name,
@@ -221,9 +221,9 @@ describe('+ FilesController', () => {
           parentId: 55,
         })
         .expect(400)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Parent not found' });
           done();
@@ -232,7 +232,7 @@ describe('+ FilesController', () => {
 
     it('+ Succeeds for valid values of a file', function (done) {
       this.timeout(5000);
-      request.post('/files')
+      axios.post('/files')
         .set('X-Token', token)
         .send({
           name: mockFiles[0].name,
@@ -240,9 +240,9 @@ describe('+ FilesController', () => {
           data: mockFiles[0].b64Data(),
         })
         .expect(201)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body.id).to.exist;
           expect(res.body.userId).to.exist;
@@ -257,7 +257,7 @@ describe('+ FilesController', () => {
 
     it('+ Succeeds for valid values of a folder', function (done) {
       this.timeout(5000);
-      request.post('/files')
+      axios.post('/files')
         .set('X-Token', token)
         .send({
           name: mockFiles[1].name,
@@ -266,9 +266,9 @@ describe('+ FilesController', () => {
           parentId: 0,
         })
         .expect(201)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body.id).to.exist;
           expect(res.body.userId).to.exist;
@@ -283,7 +283,7 @@ describe('+ FilesController', () => {
 
     it('+ Fails if parentId is set and is not of a folder or 0', function (done) {
       this.timeout(5000);
-      request.post('/files')
+      axios.post('/files')
         .set('X-Token', token)
         .send({
           name: mockFiles[2].name,
@@ -292,9 +292,9 @@ describe('+ FilesController', () => {
           parentId: mockFiles[0].id,
         })
         .expect(400)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Parent is not a folder' });
           done();
@@ -303,7 +303,7 @@ describe('+ FilesController', () => {
 
     it('+ Succeeds if parentId is set and is of a folder', function (done) {
       this.timeout(5000);
-      request.post('/files')
+      axios.post('/files')
         .set('X-Token', token)
         .send({
           name: mockFiles[2].name,
@@ -313,9 +313,9 @@ describe('+ FilesController', () => {
           isPublic: false,
         })
         .expect(201)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body.id).to.exist;
           expect(res.body.userId).to.exist;
@@ -331,7 +331,7 @@ describe('+ FilesController', () => {
 
   describe('+ GET: /files/:id', () => {
     it('+ Fails with no "X-Token" header field', function (done) {
-      request.get('/files/444555666')
+      axios.get('/files/444555666')
         .expect(401)
         .end((err, res) => {
           if (err) {
@@ -344,12 +344,12 @@ describe('+ FilesController', () => {
 
     it('+ Fails for a non-existent user', function (done) {
       this.timeout(5000);
-      request.get('/files/444555666')
+      axios.get('/files/444555666')
         .set('X-Token', 'raboof')
         .expect(401)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Unauthorized' });
           done();
@@ -358,13 +358,13 @@ describe('+ FilesController', () => {
 
     it('+ Fails if file is not linked to user', function (done) {
       this.timeout(5000);
-      request.get('/files/444555666')
+      axios.get('/files/444555666')
         .set('X-Token', token)
         .expect(404)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            console.error(requestErr);
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            console.error(axiosErr);
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Not found' });
           done();
@@ -373,12 +373,12 @@ describe('+ FilesController', () => {
 
     it('+ Succeeds if file is linked to user', function (done) {
       this.timeout(5000);
-      request.get(`/files/${mockFiles[0].id}`)
+      axios.get(`/files/${mockFiles[0].id}`)
         .set('X-Token', token)
         .expect(200)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body.id).to.exist;
           expect(res.body.userId).to.exist;
@@ -394,7 +394,7 @@ describe('+ FilesController', () => {
 
   describe('+ GET: /files', () => {
     it('+ Fails with no "X-Token" header field', function (done) {
-      request.get('/files')
+      axios.get('/files')
         .expect(401)
         .end((err, res) => {
           if (err) {
@@ -407,12 +407,12 @@ describe('+ FilesController', () => {
 
     it('+ Fails for a non-existent user', function (done) {
       this.timeout(5000);
-      request.get('/files')
+      axios.get('/files')
         .set('X-Token', 'raboof')
         .expect(401)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Unauthorized' });
           done();
@@ -421,12 +421,12 @@ describe('+ FilesController', () => {
 
     it('+ Fetches first page with no page query', function (done) {
       this.timeout(5000);
-      request.get('/files')
+      axios.get('/files')
         .set('X-Token', token)
         .expect(200)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body.length).to.eql(2);
           expect(res.body.some((file) => file.name === mockFiles[0].name)).to.be.true;
@@ -437,12 +437,12 @@ describe('+ FilesController', () => {
 
     it('+ Fetches first page with no page query and parentId', function (done) {
       this.timeout(5000);
-      request.get(`/files?parentId=${mockFiles[1].id}`)
+      axios.get(`/files?parentId=${mockFiles[1].id}`)
         .set('X-Token', token)
         .expect(200)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body.length).to.eql(1);
           expect(res.body.some((file) => file.name === mockFiles[2].name)).to.be.true;
@@ -452,12 +452,12 @@ describe('+ FilesController', () => {
 
     it('+ Returns empty list for a page that is out of bounds', function (done) {
       this.timeout(5000);
-      request.get('/files?page=5')
+      axios.get('/files?page=5')
         .set('X-Token', token)
         .expect(200)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.eql([]);
           done();
@@ -466,12 +466,12 @@ describe('+ FilesController', () => {
 
     it('+ Returns empty list for a parentId of a file', function (done) {
       this.timeout(5000);
-      request.get(`/files?parentId=${mockFiles[0].id}`)
+      axios.get(`/files?parentId=${mockFiles[0].id}`)
         .set('X-Token', token)
         .expect(200)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.eql([]);
           done();
@@ -480,12 +480,12 @@ describe('+ FilesController', () => {
 
     it('+ Returns empty list for unknown parentId', function (done) {
       this.timeout(5000);
-      request.get('/files?parentId=34556ea6727277193884848e')
+      axios.get('/files?parentId=34556ea6727277193884848e')
         .set('X-Token', token)
         .expect(200)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.eql([]);
           done();
@@ -495,7 +495,7 @@ describe('+ FilesController', () => {
 
   describe('+ PUT: /files/:id/publish', () => {
     it('+ Fails with no "X-Token" header field', function (done) {
-      request.put('/files/444555666/publish')
+      axios.put('/files/444555666/publish')
         .expect(401)
         .end((err, res) => {
           if (err) {
@@ -508,12 +508,12 @@ describe('+ FilesController', () => {
 
     it('+ Fails for a non-existent user', function (done) {
       this.timeout(5000);
-      request.put('/files/444555666/publish')
+      axios.put('/files/444555666/publish')
         .set('X-Token', 'raboof')
         .expect(401)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Unauthorized' });
           done();
@@ -522,13 +522,13 @@ describe('+ FilesController', () => {
 
     it('+ Fails if file is not linked to user', function (done) {
       this.timeout(5000);
-      request.put('/files/444555666/publish')
+      axios.put('/files/444555666/publish')
         .set('X-Token', token)
         .expect(404)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            console.error(requestErr);
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            console.error(axiosErr);
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Not found' });
           done();
@@ -537,12 +537,12 @@ describe('+ FilesController', () => {
 
     it('+ Succeeds if file is linked to user', function (done) {
       this.timeout(5000);
-      request.put(`/files/${mockFiles[0].id}/publish`)
+      axios.put(`/files/${mockFiles[0].id}/publish`)
         .set('X-Token', token)
         .expect(200)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body.id).to.exist;
           expect(res.body.userId).to.exist;
@@ -558,7 +558,7 @@ describe('+ FilesController', () => {
 
   describe('+ PUT: /files/:id/unpublish', () => {
     it('+ Fails with no "X-Token" header field', function (done) {
-      request.put('/files/444555666/unpublish')
+      axios.put('/files/444555666/unpublish')
         .expect(401)
         .end((err, res) => {
           if (err) {
@@ -571,12 +571,12 @@ describe('+ FilesController', () => {
 
     it('+ Fails for a non-existent user', function (done) {
       this.timeout(5000);
-      request.put('/files/444555666/unpublish')
+      axios.put('/files/444555666/unpublish')
         .set('X-Token', 'raboof')
         .expect(401)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Unauthorized' });
           done();
@@ -585,13 +585,13 @@ describe('+ FilesController', () => {
 
     it('+ Fails if file is not linked to user', function (done) {
       this.timeout(5000);
-      request.put('/files/444555666/unpublish')
+      axios.put('/files/444555666/unpublish')
         .set('X-Token', token)
         .expect(404)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            console.error(requestErr);
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            console.error(axiosErr);
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Not found' });
           done();
@@ -600,12 +600,12 @@ describe('+ FilesController', () => {
 
     it('+ Succeeds if file is linked to user', function (done) {
       this.timeout(5000);
-      request.put(`/files/${mockFiles[0].id}/unpublish`)
+      axios.put(`/files/${mockFiles[0].id}/unpublish`)
         .set('X-Token', token)
         .expect(200)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            return done(axiosErr);
           }
           expect(res.body.id).to.exist;
           expect(res.body.userId).to.exist;
@@ -621,7 +621,7 @@ describe('+ FilesController', () => {
 
   describe('+ GET: /files/:id/data', () => {
     it('+ Fails if the file does not exist', function (done) {
-      request.get('/files/444555666/data')
+      axios.get('/files/444555666/data')
         .expect(404)
         .end((err, res) => {
           if (err) {
@@ -632,8 +632,8 @@ describe('+ FilesController', () => {
         });
     });
 
-    it('+ Fails if the file is not public and not requested by the owner', function (done) {
-      request.get(`/files/${mockFiles[0].id}/data`)
+    it('+ Fails if the file is not public and not axiosed by the owner', function (done) {
+      axios.get(`/files/${mockFiles[0].id}/data`)
         .expect(404)
         .end((err, res) => {
           if (err) {
@@ -644,8 +644,8 @@ describe('+ FilesController', () => {
         });
     });
 
-    it('+ Succeeds if the file is not public but requested by the owner', function (done) {
-      request.get(`/files/${mockFiles[0].id}/data`)
+    it('+ Succeeds if the file is not public but axiosed by the owner', function (done) {
+      axios.get(`/files/${mockFiles[0].id}/data`)
         .set('X-Token', token)
         .expect(200)
         .end((err, res) => {
@@ -660,20 +660,20 @@ describe('+ FilesController', () => {
 
     it('+ Fails if the file is a folder', function (done) {
       this.timeout(5000);
-      request.get(`/files/${mockFiles[1].id}/data`)
+      axios.get(`/files/${mockFiles[1].id}/data`)
         .expect(400)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            console.error(requestErr);
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            console.error(axiosErr);
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'A folder doesn\'t have content' });
           done();
         });
     });
 
-    it('+ Succeeds if the file is not public but requested by the owner [alt]', function (done) {
-      request.get(`/files/${mockFiles[2].id}/data`)
+    it('+ Succeeds if the file is not public but axiosed by the owner [alt]', function (done) {
+      axios.get(`/files/${mockFiles[2].id}/data`)
         .set('X-Token', token)
         .expect(200)
         .end((err, res) => {
@@ -689,12 +689,12 @@ describe('+ FilesController', () => {
     it('+ Fails if the file is not locally present', function (done) {
       this.timeout(5000);
       emptyFolder(baseDir);
-      request.get(`/files/${mockFiles[2].id}/data`)
+      axios.get(`/files/${mockFiles[2].id}/data`)
         .expect(404)
-        .end((requestErr, res) => {
-          if (requestErr) {
-            console.error(requestErr);
-            return done(requestErr);
+        .end((axiosErr, res) => {
+          if (axiosErr) {
+            console.error(axiosErr);
+            return done(axiosErr);
           }
           expect(res.body).to.deep.eql({ error: 'Not found' });
           done();

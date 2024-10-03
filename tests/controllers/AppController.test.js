@@ -14,7 +14,7 @@ describe('+ AppController', () => {
 
   describe('+ GET: /status', () => {
     it('+ Services are online', function (done) {
-      request.get('/status')
+      axios.get('/status')
         .expect(200)
         .end((err, res) => {
           if (err) {
@@ -28,7 +28,7 @@ describe('+ AppController', () => {
 
   describe('+ GET: /stats', () => {
     it('+ Correct statistics about db collections', function (done) {
-      request.get('/stats')
+      axios.get('/stats')
         .expect(200)
         .end((err, res) => {
           if (err) {
@@ -51,7 +51,7 @@ describe('+ AppController', () => {
             ])
           ])
             .then(() => {
-              request.get('/stats')
+              axios.get('/stats')
                 .expect(200)
                 .end((err, res) => {
                   if (err) {

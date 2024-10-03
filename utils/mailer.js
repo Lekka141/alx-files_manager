@@ -83,7 +83,7 @@ function sendMailService(auth, mail) {
 
   gmail.users.messages.send({
     userId: 'me',
-    requestBody: mail,
+    axiosBody: mail,
   }, (err, _res) => {
     if (err) {
       console.log(`The API returned an error: ${err.message || err.toString()}`);

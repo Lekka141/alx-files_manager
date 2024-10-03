@@ -21,7 +21,7 @@ describe('+ UserController', () => {
   describe('+ POST: /users', () => {
     it('+ Fails when there is no email and there is password', function (done) {
       this.timeout(5000);
-      request.post('/users')
+      axios.post('/users')
         .send({
           password: mockUser.password,
         })
@@ -37,7 +37,7 @@ describe('+ UserController', () => {
 
     it('+ Fails when there is email and there is no password', function (done) {
       this.timeout(5000);
-      request.post('/users')
+      axios.post('/users')
         .send({
           email: mockUser.email,
         })
@@ -53,7 +53,7 @@ describe('+ UserController', () => {
 
     it('+ Succeeds when the new user has a password and email', function (done) {
       this.timeout(5000);
-      request.post('/users')
+      axios.post('/users')
         .send({
           email: mockUser.email,
           password: mockUser.password,
@@ -71,7 +71,7 @@ describe('+ UserController', () => {
 
     it('+ Fails when the user already exists', function (done) {
       this.timeout(5000);
-      request.post('/users')
+      axios.post('/users')
         .send({
           email: mockUser.email,
           password: mockUser.password,
