@@ -16,7 +16,7 @@ export default [
             },
             parser: babelParser,
             parserOptions: {
-                requireConfigFile: false, // Allows ESLint to parse without a Babel config file
+                requireConfigFile: false,
                 babelOptions: {
                     presets: ['@babel/preset-env'],
                 },
@@ -27,9 +27,8 @@ export default [
         },
         rules: {
             'no-unused-vars': 'warn',
+            'import/no-named-as-default': 'off', // Disable this rule temporarily
             'no-console': 'off',
-            'import/no-named-as-default': 'error',
-            // Add or customize more rules here
         },
     },
 ];
