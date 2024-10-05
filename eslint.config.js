@@ -1,5 +1,6 @@
 import babelParser from '@babel/eslint-parser';
 import importPlugin from 'eslint-plugin-import';
+import typescriptPlugin from '@typescript-eslint/eslint-plugin';
 
 export default [
     {
@@ -17,6 +18,9 @@ export default [
             parser: babelParser,
             parserOptions: {
                 requireConfigFile: false,
+                ecmaFeatures: {
+                    jsx: true,
+                },
                 babelOptions: {
                     presets: ['@babel/preset-env'],
                 },
@@ -24,11 +28,12 @@ export default [
         },
         plugins: {
             import: importPlugin,
+            '@typescript-eslint': typescriptPlugin,
         },
         rules: {
             'no-unused-vars': 'warn',
-            'import/no-named-as-default': 'off', // Disable this rule temporarily
-            'no-console': 'off',
+            'import/no-named-as-default': 'off',
+            // Add more rules as needed
         },
     },
 ];
